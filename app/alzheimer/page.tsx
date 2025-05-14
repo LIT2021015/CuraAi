@@ -22,29 +22,27 @@ const page = () => {
     });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-
+  
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
     });
-
-    const res = await fetch('/api/resulta', {
-      method : 'POST',
+  
+    const res = await fetch('https://b318-34-86-75-124.ngrok-free.app/predict', {
+      method: 'POST',
       body: data,
     });
-
-    if(res.ok)
-    {
-      alert("Form Submitted Normally")
+  
+    if (res.ok) {
+      const result = await res.json();
+      alert(`Prediction: ${result.predicted_class}\nConfidence: ${result.confidence.toFixed(2)}`);
+    } else {
+      alert("Prediction failed.");
     }
-    else
-    {
-      alert("Error Submitting Form")
-    }
-
   };
+  
   return (
     <>
       <div className='flex flex-col items-center justify-center mt-20'>
