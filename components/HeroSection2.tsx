@@ -1,47 +1,39 @@
-import Image from 'next/image'
-import React from 'react'
+"use client";
+import Image from "next/image";
+import React from "react";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 
 const HeroSection2 = () => {
   return (
-    <div className='flex flex-col justify-center items-center mt-10'>
-        <h3 className='text-3xl '> 
-            <b><i>AI in healthcare</i></b>
-        </h3>
-        <br />
+    <section className="flex flex-col items-center justify-center mt-10 px-4 sm:px-6 lg:px-12">
+      <BackgroundGradient
+        className="w-full max-w-6xl rounded-[28px] px-8 py-12 text-gray-900 dark:text-slate-100 bg-white dark:bg-zinc-900"
+        containerClassName="w-full"
+      >
+        <div className="flex flex-col items-center text-center">
+          <h3 className="text-4xl sm:text-5xl font-bold italic text-[#2f855a] dark:text-[#48CFAD] bg-clip-text mb-6">
+            AI in Healthcare
+          </h3>
 
-        <p className='flex flex-wrap text-center text-xl ml-4 mr-4'>
-        The artificial intelligence (AI) technologies becoming ever present
-            in modern business and everyday life is also steadily being applied
-            to healthcare. The use of artificial intelligence in healthcare has
-            the potential to assist healthcare providers in many aspects of
-            patient care and administrative processes. Most AI and healthcare
-            technologies have strong relevance to the healthcare field, but the
-            tactics they support can vary significantly. And while some articles
-            on artificial intelligence in healthcare suggest that the use of
-            artificial intelligence in healthcare can perform just as well or
-            better than humans at certain procedures, such as diagnosing
-            disease, it will be a significant number of years before AI in
-            healthcare replaces humans for a broad range of medical tasks.
-        </p>
+          <p className="text-lg sm:text-xl max-w-4xl leading-relaxed text-gray-700 dark:text-slate-300 mb-8">
+            The integration of AI in healthcare is transforming how we approach
+            diagnosis and patient care. From medical imaging to predictive
+            analytics, AI empowers doctors with faster, more accurate insights.
+          </p>
 
-        <div className='flex flex-col items-center justify-center mt-4 mb-4'>
+          <div className="mt-6">
             <Image
-                src = "/images/healthcure.png"
-                alt = ""
-                height={800}
-                width = {800}
-                className='rounded-xl border-cyan-500 border-4'
+              src="/images/healthcure.png"
+              alt="Healthcare AI"
+              height={600}
+              width={800}
+              className="rounded-2xl border-4 border-cyan-500 dark:border-cyan-400 shadow-xl hover:scale-105 transition-transform duration-300"
             />
+          </div>
         </div>
+      </BackgroundGradient>
+    </section>
+  );
+};
 
-        
-
-
-       
-    
-    
-    </div>
-  )
-}
-
-export default HeroSection2
+export default HeroSection2;

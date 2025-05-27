@@ -7,7 +7,7 @@ import HeroSection2 from "@/components/HeroSection2";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-aroundy">
+    <main className="flex flex-col items-center justify-around bg-[#F8F9FA] dark:bg-[#1A1A2E]">
       <HeroSection />
       <DiseaseCard />
       <HeroSection2 />

@@ -1,4 +1,5 @@
 "use client";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { useState } from "react";
 
 interface PredictionResult {
@@ -27,9 +28,7 @@ export default function CovidDiagnosis() {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Prediction failed. Check the backend server.");
-      }
+      if (!res.ok) throw new Error("Prediction failed. Check the backend server.");
 
       const data: PredictionResult = await res.json();
       setResult(data);
@@ -47,76 +46,59 @@ export default function CovidDiagnosis() {
       : "✅ You are likely Normal. Stay safe!";
   };
 
-  const getDiagnosisStyle = () => {
-    if (!result) return {};
-    return {
-      color: result.class === 0 ? "#d00000" : "#007f00",
-      fontWeight: "bold",
-      fontSize: "18px",
-      marginTop: "10px",
-    };
-  };
-
   return (
-    <main
-      style={{
-        maxWidth: "600px",
-        margin: "80px auto 100px",
-        padding: "20px",
-        boxShadow: "0 0 15px rgba(0,0,0,0.1)",
-        borderRadius: "10px",
-        backgroundColor: "#f9f9f9",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      }}
-    >
-      <h1 style={{ textAlign: "center", fontSize: "28px", marginBottom: "20px" }}>
-        🧪 COVID X-Ray Diagnosis
-      </h1>
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        style={{
-          display: "block",
-          margin: "20px auto",
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "6px",
-        }}
-      />
+    <main className="min-h-screen bg-gradient-to-br  flex items-center justify-center py-20 px-4">
+      <BackgroundGradient
+                  className="rounded-[22px] p-6 sm:p-10 bg-white dark:bg-zinc-900 shadow-lg hover:shadow-2xl transition-all duration-300"
+                >
+      <div className="w-full max-w-xl rounded-2xl p-8 shadow-2xl backdrop-blur-lg bg-white/30 dark:bg-zinc-900/30 border border-white/20 dark:border-gray-700 transition-all">
+        <h1 className="text-3xl font-extrabold text-center mb-6 text-[#6A4C93] dark:text-[#9F7AEA]">
+          🧪 COVID X-Ray Diagnosis
+        </h1>
 
-      <button
-        onClick={handleUpload}
-        disabled={loading || !file}
-        style={{
-          display: "block",
-          margin: "10px auto",
-          padding: "12px 24px",
-          backgroundColor: "#0070f3",
-          color: "#fff",
-          border: "none",
-          borderRadius: "6px",
-          fontSize: "16px",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-      >
-        {loading ? "Predicting..." : "Predict"}
-      </button>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="w-full mb-4 p-3 bg-white/80 dark:bg-zinc-900/40 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+        />
 
-      {error && (
-        <p style={{ color: "red", textAlign: "center", marginTop: "20px" }}>{error}</p>
-      )}
+        <button
+          onClick={handleUpload}
+          disabled={loading || !file}
+          className={`w-full py-3 rounded-md text-white text-lg font-semibold transition duration-300 ${
+            loading || !file
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#6A4C93] hover:bg-[#56357c]"
+          }`}
+        >
+          {loading ? "Predicting..." : "Predict"}
+        </button>
 
-      {result && (
-        <div style={{ marginTop: "30px", textAlign: "center" }}>
-          <p>
-            <strong>Confidence:</strong>{" "}
-            {(result.confidence * 100).toFixed(2)}%
-          </p>
-          <p style={getDiagnosisStyle()}>{getDiagnosisMessage()}</p>
-        </div>
-      )}
+        {error && (
+          <p className="mt-4 text-center text-red-600 font-medium">{error}</p>
+        )}
+
+        {result && (
+          <div className="mt-6 text-center space-y-3">
+            <p className="text-lg">
+              <strong>Confidence:</strong>{" "}
+              <span className="text-cyan-700 dark:text-cyan-300">
+                {(result.confidence * 100).toFixed(2)}%
+              </span>
+            </p>
+            <p
+              className={`text-lg font-bold ${
+                result.class === 0 ? "text-red-600" : "text-green-600"
+              }`}
+            >
+              {getDiagnosisMessage()}
+            </p>
+          </div>
+        )}
+      </div>
+      </BackgroundGradient>
     </main>
   );
 }
