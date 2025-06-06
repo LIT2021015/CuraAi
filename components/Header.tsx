@@ -10,13 +10,13 @@ import { MdOutlineHealthAndSafety } from "react-icons/md";
 const navItems = [
   {
     name: "Diseases",
-    icon: <MdOutlineHealthAndSafety className="inline-block mr-2" />, 
+    icon: <MdOutlineHealthAndSafety className="inline-block mr-2" />,
     items: [
-      { name: "Brain Tumor", link: "/braintumor", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Brain Tumor", link: "/braintumor", icon: <FaRobot className="inline-block mr-2" /> },
       { name: "Pneumonia", link: "/pneumonia", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Covid", link: "/covid", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Breast Cancer", link: "/breastcancer", icon: <FaHeartbeat className="inline-block mr-2" /> },
-      // { name: "Alzheimer", link: "/alzheimer", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Alzheimer", link: "/alzheimer", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Diabetes", link: "/diabetes", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Heart Disease", link: "/heartdisease", icon: <FaHeartbeat className="inline-block mr-2" /> },
     ],
@@ -39,24 +39,37 @@ const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Effect to close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      for (const key in dropdownRefs.current) {
-        const ref = dropdownRefs.current[key];
-        if (ref && !ref.contains(event.target as Node)) {
-          setOpenDropdown(null);
-        }
+      // Check if the click is outside all tracked dropdown areas
+      const isOutside = Object.values(dropdownRefs.current).every(
+        (ref) => ref && !ref.contains(event.target as Node)
+      );
+
+      if (isOutside) {
+        setOpenDropdown(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // **NEW**: Effect to close menus on navigation
+  useEffect(() => {
+    if (openDropdown || isMobileMenuOpen) {
+      setOpenDropdown(null);
+      setMobileMenuOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-[#2A5C99] dark:bg-[#4A89DC] flex justify-between items-center px-4 md:px-10 py-2 z-50 shadow-lg h-16">
-      <div className="text-3xl font-extrabold italic text-white animate-pulse">
+      <Link href="/" className="text-3xl font-extrabold italic text-white animate-pulse">
         Cura<span className="text-yellow-300">AI</span>
-      </div>
+      </Link>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center space-x-8 text-white font-medium">
@@ -78,7 +91,8 @@ const Header = () => {
                   <Link
                     key={item.name}
                     href={item.link}
-                    className={`flex items-center px-4 py-2 rounded transition duration-200 hover:bg-[#1e4477] ${
+                    // REMOVED onClick from here
+                    className={`w-full text-left flex items-center px-4 py-2 rounded transition duration-200 hover:bg-[#1e4477] ${
                       pathname === item.link ? "bg-[#1e4477] text-yellow-300" : ""
                     }`}
                   >
@@ -121,13 +135,10 @@ const Header = () => {
                     <Link
                       key={item.name}
                       href={item.link}
+                      // REMOVED onClick from here
                       className={`text-sm flex items-center gap-1 hover:text-yellow-300 transition ${
                         pathname === item.link ? "text-yellow-300" : ""
                       }`}
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        setOpenDropdown(null);
-                      }}
                     >
                       {item.icon} {item.name}
                     </Link>
