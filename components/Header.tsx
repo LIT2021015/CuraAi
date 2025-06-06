@@ -2,29 +2,50 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
+import { FaHeartbeat, FaMapMarkedAlt, FaRobot, FaCalendarAlt } from "react-icons/fa";
+import { MdOutlineHealthAndSafety } from "react-icons/md";
 
-const diseases = [
-  { name: "Brain Tumor", link: "/braintumor" },
-  { name: "Pneumonia", link: "/pneumonia" },
-  { name: "Covid", link: "/covid" },
-  { name: "Breast Cancer", link: "/breastcancer" },
-  { name: "Alzheimer", link: "/alzheimer" },
-  { name: "Diabetes", link: "/diabetes" },
+const navItems = [
+  {
+    name: "Diseases",
+    icon: <MdOutlineHealthAndSafety className="inline-block mr-2" />, 
+    items: [
+      { name: "Brain Tumor", link: "/braintumor", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Pneumonia", link: "/pneumonia", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Covid", link: "/covid", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Breast Cancer", link: "/breastcancer", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      // { name: "Alzheimer", link: "/alzheimer", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Diabetes", link: "/diabetes", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Heart Disease", link: "/heartdisease", icon: <FaHeartbeat className="inline-block mr-2" /> },
+    ],
+  },
+  {
+    name: "Features",
+    icon: <FaCalendarAlt className="inline-block mr-2" />,
+    items: [
+      { name: "Planner", link: "/planner", icon: <FaCalendarAlt className="inline-block mr-2" /> },
+      { name: "SOS", link: "/sos", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      { name: "Map", link: "/map", icon: <FaMapMarkedAlt className="inline-block mr-2" /> },
+      { name: "Chat", link: "/chat", icon: <FaRobot className="inline-block mr-2" /> },
+    ],
+  },
 ];
 
 const Header = () => {
+  const pathname = usePathname();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDiseaseOpen, setDiseaseOpen] = useState(false);
-  const diseaseRef = useRef<HTMLDivElement>(null);
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        diseaseRef.current &&
-        !diseaseRef.current.contains(event.target as Node)
-      ) {
-        setDiseaseOpen(false);
+      for (const key in dropdownRefs.current) {
+        const ref = dropdownRefs.current[key];
+        if (ref && !ref.contains(event.target as Node)) {
+          setOpenDropdown(null);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -33,34 +54,41 @@ const Header = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-[#2A5C99] dark:bg-[#4A89DC] flex justify-between items-center px-4 md:px-10 py-2 z-50 shadow-lg h-16">
-      {/* Logo Text */}
       <div className="text-3xl font-extrabold italic text-white animate-pulse">
         Cura<span className="text-yellow-300">AI</span>
       </div>
 
       {/* Desktop Menu */}
-      <div className="hidden md:flex items-center space-x-6 text-white font-medium">
-        <div className="relative" ref={diseaseRef}>
-          <button
-            onClick={() => setDiseaseOpen(!isDiseaseOpen)}
-            className="hover:text-yellow-300 transition"
+      <div className="hidden md:flex items-center space-x-8 text-white font-medium">
+        {navItems.map((menu) => (
+          <div
+            key={menu.name}
+            className="relative"
+            ref={(el) => (dropdownRefs.current[menu.name] = el)}
           >
-            Diseases
-          </button>
-          {isDiseaseOpen && (
-            <div className="absolute top-10 left-0 bg-[#2A5C99] dark:bg-[#4A89DC] rounded shadow-lg p-2 space-y-2 z-50">
-              {diseases.map((disease) => (
-                <Link
-                  key={disease.name}
-                  href={disease.link}
-                  className="block px-4 py-2 hover:bg-[#1e4477] rounded"
-                >
-                  {disease.name}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+            <button
+              onClick={() => setOpenDropdown(openDropdown === menu.name ? null : menu.name)}
+              className="hover:text-yellow-300 transition flex items-center gap-1"
+            >
+              {menu.icon} {menu.name}
+            </button>
+            {openDropdown === menu.name && (
+              <div className="absolute top-12 left-0 bg-[#2A5C99] dark:bg-[#4A89DC] rounded-lg shadow-lg p-3 space-y-2 z-50 animate-fade-in-down">
+                {menu.items.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.link}
+                    className={`flex items-center px-4 py-2 rounded transition duration-200 hover:bg-[#1e4477] ${
+                      pathname === item.link ? "bg-[#1e4477] text-yellow-300" : ""
+                    }`}
+                  >
+                    {item.icon} {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
         <ThemeToggle />
       </div>
 
@@ -78,27 +106,36 @@ const Header = () => {
 
       {/* Mobile Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[#2A5C99] dark:bg-[#4A89DC] flex flex-col items-center py-4 text-white space-y-3 font-medium shadow-md z-40">
-          <button
-            onClick={() => setDiseaseOpen(!isDiseaseOpen)}
-            className="text-lg hover:text-yellow-300"
-          >
-            Diseases
-          </button>
-          {isDiseaseOpen &&
-            diseases.map((disease) => (
-              <Link
-                key={disease.name}
-                href={disease.link}
-                className="text-lg hover:text-yellow-300"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setDiseaseOpen(false);
-                }}
+        <div className="absolute top-16 left-0 w-full bg-[#2A5C99] dark:bg-[#4A89DC] flex flex-col items-center py-4 text-white space-y-4 font-medium shadow-md z-40 animate-fade-in-down">
+          {navItems.map((menu) => (
+            <div key={menu.name} className="w-full flex flex-col items-center">
+              <button
+                onClick={() => setOpenDropdown(openDropdown === menu.name ? null : menu.name)}
+                className="text-lg hover:text-yellow-300 flex items-center gap-1"
               >
-                {disease.name}
-              </Link>
-            ))}
+                {menu.icon} {menu.name}
+              </button>
+              {openDropdown === menu.name && (
+                <div className="flex flex-col items-center mt-2 space-y-2">
+                  {menu.items.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.link}
+                      className={`text-sm flex items-center gap-1 hover:text-yellow-300 transition ${
+                        pathname === item.link ? "text-yellow-300" : ""
+                      }`}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setOpenDropdown(null);
+                      }}
+                    >
+                      {item.icon} {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </nav>
