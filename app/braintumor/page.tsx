@@ -1,13 +1,14 @@
 'use client';
 
 import { BackgroundGradient } from '@/components/ui/background-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Page = () => {
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<{ label: string; confidence: number } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false)
 
   // Additional user info
   const [firstname, setFirstname] = useState('');
@@ -16,6 +17,15 @@ const Page = () => {
   const [gender, setGender] = useState('male');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render nothing or loading skeleton to prevent hydration mismatch
+    return null;
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -43,7 +53,7 @@ const Page = () => {
     setLoading(true);
     setResult(null);
 
-    const res = await fetch('http://localhost:8000/predict', {
+    const res = await fetch('https://braintumor-fb01.onrender.com/predict', {
       method: 'POST',
       body: formData,
     });

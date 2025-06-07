@@ -2,9 +2,10 @@
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Page = () => {
+  const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -23,6 +24,15 @@ const Page = () => {
 
   const [result, setResult] = useState<null | number>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render nothing or loading skeleton to prevent hydration mismatch
+    return null;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

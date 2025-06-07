@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BackgroundGradient } from '@/components/ui/background-gradient';
 
 const page = () => {
+  const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -24,6 +25,15 @@ const page = () => {
   });
 
   const [result, setResult] = useState<null | { prediction: number; probability: number[] }>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render nothing or loading skeleton to prevent hydration mismatch
+    return null;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
