@@ -1,11 +1,10 @@
 "use client";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -23,16 +22,14 @@ const Page = () => {
   });
 
   const [result, setResult] = useState<null | number>(null);
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    // Render nothing or loading skeleton to prevent hydration mismatch
-    return null;
-  }
+  if (!mounted) return null;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -45,54 +42,37 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const prediction = Math.random() > 0.5 ? 1 : 0;
-    setResult(prediction);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("https://diabetes-u5u0.onrender.com/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Prediction failed");
+      }
+
+      const data = await response.json();
+      // const data = await response.json();
+console.log("Raw prediction response:", data);
+console.log("Parsed prediction value:", Number(data.result));
+// setResult(Number(data.result));
+
+      setResult(Number(data.result));
+      console.log("Prediction:", data.result, typeof data.result);
+
+    } catch (err: any) {
+      console.error(err);
+      setError("Something went wrong while fetching the prediction.");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  if (result !== null) {
-    return (
-      <div className="py-20 min-h-screen flex items-center justify-center px-4 bg-gray-100 dark:bg-gray-900">
-        <BackgroundGradient className="rounded-[22px] p-6 sm:p-10 bg-white dark:bg-zinc-900 shadow-lg hover:shadow-2xl transition-all duration-300">
-          <div className="w-full max-w-3xl bg-white dark:bg-zinc-800 p-6 rounded-xl shadow-xl text-center">
-            <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100">
-              Diabetes Test Results
-            </h1>
-
-            <div className="mt-6 flex flex-col md:flex-row items-center justify-around gap-6">
-              <Image
-                src="/static/db1.png"
-                alt="Result Image"
-                width={250}
-                height={250}
-              />
-              <div className="space-y-2 text-left text-gray-700 dark:text-gray-200">
-                <p>
-                  <strong>First Name:</strong> {formData.firstname}
-                </p>
-                <p>
-                  <strong>Last Name:</strong> {formData.lastname}
-                </p>
-                <p>
-                  <strong>Age:</strong> {formData.age}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {formData.gender}
-                </p>
-                <p className="mt-4 text-xl font-semibold">
-                  Result:{" "}
-                  <span
-                    className={result === 1 ? "text-red-600" : "text-green-600"}
-                  >
-                    {result === 1 ? "POSITIVE" : "NEGATIVE"}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </BackgroundGradient>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-100 dark:bg-gray-900">
@@ -202,11 +182,56 @@ const Page = () => {
               <button
                 type="submit"
                 className="w-full md:w-1/2 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold"
+                disabled={loading}
               >
-                Submit
+                {loading ? "Predicting..." : "Submit"}
               </button>
             </div>
           </form>
+
+          {error && (
+            <p className="mt-4 text-red-600 text-center font-semibold">{error}</p>
+          )}
+
+          {result !== null && (
+            <div className="mt-10 border-t pt-6">
+              <div className="text-center mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
+                  Result
+                </h2>
+              </div>
+              <div className="flex flex-col md:flex-row items-center justify-around gap-6">
+                {/* <Image
+                  src="/static/db1.png"
+                  alt="Result Image"
+                  width={250}
+                  height={250}
+                /> */}
+                <div className="space-y-2 text-left text-gray-700 dark:text-gray-200">
+                  <p>
+                    <strong>First Name:</strong> {formData.firstname}
+                  </p>
+                  <p>
+                    <strong>Last Name:</strong> {formData.lastname}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {formData.age}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {formData.gender}
+                  </p>
+                  <p className="mt-4 text-xl font-semibold">
+                    Result:{" "}
+                    <span
+                      className={result === 1 ? "text-red-600" : "text-green-600"}
+                    >
+                      {result === 1 ? "POSITIVE" : "NEGATIVE"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </BackgroundGradient>
       </div>
     </div>

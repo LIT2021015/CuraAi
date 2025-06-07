@@ -66,6 +66,7 @@ const Page = () => {
       });
 
       const data = await res.json();
+      console.log(data)
       setResult(data.prediction === 1 ? "POSITIVE" : "NEGATIVE");
     } catch (error) {
       console.error("Prediction error:", error);
