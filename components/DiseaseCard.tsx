@@ -31,9 +31,9 @@ const diseases: Disease[] = [
     image: "/images/icons/breastcancer.png",
   },
   {
-    name: "Alzheimer Detection",
-    link: "/alzheimer",
-    image: "/images/icons/alzheimer.png",
+    name: "Heart Disease",
+    link: "/heartdisease",
+    image: "/images/icons/heartdisease.png",
   },
   {
     name: "Diabetes Detection",
