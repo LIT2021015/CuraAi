@@ -35,7 +35,7 @@ const Header = () => {
     <nav className="fixed top-0 left-0 right-0 bg-[#2A5C99] dark:bg-[#4A89DC] flex justify-between items-center px-4 md:px-10 py-2 z-50 shadow-lg h-16">
       {/* Logo Text */}
       <div className="text-3xl font-extrabold italic text-white animate-pulse">
-        Cura<span className="text-yellow-300">AI</span>
+        Smart<span className="text-yellow-300">Diagnose</span>
       </div>
 
       {/* Desktop Menu */}
