@@ -33,23 +33,31 @@ const Page = () => {
     e.preventDefault();
     setLoading(true);
 
-    const formPayload = new FormData();
-    formPayload.append('op', formData.op);
-    formPayload.append('mhra', formData.mhra);
-    formPayload.append('eia', formData.eia);
-    formPayload.append('nmv', formData.nmv);
-    formPayload.append('tcp', formData.tcp);
-    formPayload.append('age', formData.age);
-    formPayload.append('thal', formData.thal);
-
     try {
-      const res = await fetch('http://localhost:8000/predict', {
+      const res = await fetch('https://heartdisease-5ivk.onrender.com/predict', {
         method: 'POST',
-        body: formPayload,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          age: parseInt(formData.age),
+          sex: formData.gender === 'male' ? 1 : 0,
+          cp: parseInt(formData.tcp),
+          trestbps: 120, // optional default
+          chol: 200, // optional default
+          fbs: 0, // optional default
+          restecg: 1, // optional default
+          thalach: parseInt(formData.mhra),
+          exang: parseInt(formData.eia),
+          oldpeak: parseFloat(formData.op),
+          slope: 2, // optional default
+          ca: parseInt(formData.nmv),
+          thal: parseInt(formData.thal),
+        }),
       });
 
       const data = await res.json();
-      setResult(data.result === 1 ? 'POSITIVE' : 'NEGATIVE');
+      setResult(data.prediction === 1 ? 'POSITIVE' : 'NEGATIVE');
     } catch (error) {
       console.error('Prediction error:', error);
       alert('Failed to get prediction. Please try again.');
