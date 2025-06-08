@@ -78,7 +78,10 @@ const Header = () => {
           <div
             key={menu.name}
             className="relative"
-            ref={(el) => (dropdownRefs.current[menu.name] = el)}
+          ref={(el) => {
+  dropdownRefs.current[menu.name] = el;
+}}
+
           >
             <button
               onClick={() => setOpenDropdown(openDropdown === menu.name ? null : menu.name)}

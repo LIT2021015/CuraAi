@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-let conversation: any[] = [
+const conversation: any[] = [
   { role: "system", content: "You are a helpful assistant." },
 ];
 

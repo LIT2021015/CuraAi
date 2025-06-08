@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String         @unique
+  password      String
+  age           Int?
+  gender        String?
+  lifestyle     String?
+  bloodGroup    String?
+  reminders     Reminder[]
+  vlogs         HealthVlog[]
+  bloodRequests BloodRequest[]
+  consultations Consultation[]
+  emergencyLogs EmergencySOS[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  volunteers    Volunteer[] 
+}
+
+model Hospital {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String         @unique
+  password       String
+  location       String
+  lat            Float
+  lng            Float
+  departments    String[]
+  facilities     String[]
+  slotsAvailable String[]
+  bloodTypes     BloodStock[]   
+  volunteers     Volunteer[]
+  consultations  Consultation[]
+  bloodRequests  BloodRequest[] @relation("HospitalRequests")
+  doctors        Doctor[]       // New: list of doctors
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Doctor {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  hospitalId     String   @db.ObjectId
+  hospital       Hospital @relation(fields: [hospitalId], references: [id])
+  name           String
+  email          String   @unique
+  specialization String
+  availableSlots String[]       // example: ["10:00", "12:00", "16:00"]
+  consultations  Consultation[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BloodStock {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  hospitalId String   @db.ObjectId
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+  bloodGroup String   // e.g., "A+", "O-"
+  quantity   Int      // in units
+  updatedAt  DateTime @updatedAt
+}
+
+model BloodRequest {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  hospitalId  String?   @db.ObjectId
+  fulfilledBy Hospital? @relation("HospitalRequests", fields: [hospitalId], references: [id])
+  bloodGroup  String
+  units       Int       @default(1)
+  status      String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime  @default(now())
+}
+
+model Consultation {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+
+  hospitalId String   @db.ObjectId
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  doctorId   String?   @db.ObjectId
+  doctor     Doctor?   @relation(fields: [doctorId], references: [id])
+
+  dateTime   DateTime
+  videoLink  String?
+  notes      String?
+  createdAt  DateTime @default(now())
+}
+
+model Volunteer {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  hospitalId   String   @db.ObjectId
+  hospital     Hospital @relation(fields: [hospitalId], references: [id])
+  name         String
+  contact      String
+  bloodGroup   String
+  registeredAt DateTime @default(now())
+  userId     String   @db.ObjectId
+user       User     @relation(fields: [userId], references: [id])
+}
+
+model Reminder {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String   @db.ObjectId
+  user    User     @relation(fields: [userId], references: [id])
+  message String
+  time    DateTime
+  sent    Boolean  @default(false)
+}
+
+model EmergencySOS {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  location    String
+  contacts    String[]  // emergency contact numbers
+  triggeredAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?  @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  seen      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model HealthVlog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  content   String
+  tags      String[]
+  createdAt DateTime @default(now())
+}
