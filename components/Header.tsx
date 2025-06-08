@@ -16,7 +16,7 @@ const navItems = [
       { name: "Pneumonia", link: "/pneumonia", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Covid", link: "/covid", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Breast Cancer", link: "/breastcancer", icon: <FaHeartbeat className="inline-block mr-2" /> },
-      { name: "Alzheimer", link: "/alzheimer", icon: <FaHeartbeat className="inline-block mr-2" /> },
+      // { name: "Alzheimer", link: "/alzheimer", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Diabetes", link: "/diabetes", icon: <FaHeartbeat className="inline-block mr-2" /> },
       { name: "Heart Disease", link: "/heartdisease", icon: <FaHeartbeat className="inline-block mr-2" /> },
     ],

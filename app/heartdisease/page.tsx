@@ -1,26 +1,35 @@
 "use client";
 
-import { BackgroundGradient } from '@/components/ui/background-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 
 const Page = () => {
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
-    firstname: '',
-    lastname: '',
-    phone: '',
-    email: '',
-    gender: 'male',
-    op: '',
-    mhra: '',
-    eia: '0',
-    nmv: '0',
-    tcp: '0',
-    age: '',
-    thal: '1',
+    firstname: "",
+    lastname: "",
+    phone: "",
+    email: "",
+    gender: "male",
+    op: "",
+    mhra: "",
+    eia: "0",
+    nmv: "0",
+    tcp: "0",
+    age: "",
+    thal: "1",
   });
 
-  const [result, setResult] = useState<null | 'POSITIVE' | 'NEGATIVE'>(null);
+  const [result, setResult] = useState<null | "POSITIVE" | "NEGATIVE">(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -33,27 +42,29 @@ const Page = () => {
     e.preventDefault();
     setLoading(true);
 
-    const formPayload = new FormData();
-    formPayload.append('op', formData.op);
-    formPayload.append('mhra', formData.mhra);
-    formPayload.append('eia', formData.eia);
-    formPayload.append('nmv', formData.nmv);
-    formPayload.append('tcp', formData.tcp);
-    formPayload.append('age', formData.age);
-    formPayload.append('thal', formData.thal);
-
     try {
-      const res = await fetch('http://localhost:8000/predict', {
-        method: 'POST',
-        body: formPayload,
-      });
+      const res = await fetch("https://heartdisease-5ivk.onrender.com/api/predict_heart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    ca: parseInt(formData.nmv),
+    cp: parseInt(formData.tcp),
+    exang: parseInt(formData.eia),
+    thal: parseInt(formData.thal),
+    oldpeak: parseFloat(formData.op),
+    thalach: parseInt(formData.mhra),
+    age: parseInt(formData.age)
+  }),
+});
 
       const data = await res.json();
-      setResult(data.result === 1 ? 'POSITIVE' : 'NEGATIVE');
+      console.log(data)
+      setResult(data.prediction == 0 ? "POSITIVE" : "NEGATIVE");
     } catch (error) {
-      console.error('Prediction error:', error);
-      alert('Failed to get prediction. Please try again.');
+      console.error("Prediction error:", error);
+      alert("Failed to get prediction. Please try again.");
     }
+
     setLoading(false);
   };
 
@@ -128,7 +139,7 @@ const Page = () => {
                   value={formData.op}
                   onChange={handleChange}
                   required
-                  placeholder="Old Peak"
+                  placeholder="Old Peak (ST depression)"
                   className="w-full p-3 rounded-xl border-2"
                 />
                 <input
@@ -148,8 +159,8 @@ const Page = () => {
                   required
                   className="w-full p-3 rounded-xl border-2"
                 >
-                  <option value="0">No Exercise Angina</option>
-                  <option value="1">Exercise Angina</option>
+                  <option value="0">No Exercise Induced Angina</option>
+                  <option value="1">Exercise Induced Angina</option>
                 </select>
               </div>
 
@@ -161,8 +172,10 @@ const Page = () => {
                   required
                   className="p-3 rounded-xl border-2"
                 >
-                  {[0, 1, 2, 3, 4].map((n) => (
-                    <option key={n} value={n}>{n} Major Vessels</option>
+                  {[0, 1, 2, 3].map((n) => (
+                    <option key={n} value={n}>
+                      {n} Major Vessels (CA = {n})
+                    </option>
                   ))}
                 </select>
                 <select
@@ -172,10 +185,10 @@ const Page = () => {
                   required
                   className="p-3 rounded-xl border-2"
                 >
-                  <option value="0">Typical Angina</option>
-                  <option value="1">Atypical Angina</option>
-                  <option value="2">Non-Anginal Pain</option>
-                  <option value="3">Asymptomatic</option>
+                  <option value="0">Typical Angina (CP = 0)</option>
+                  <option value="1">Atypical Angina (CP = 1)</option>
+                  <option value="2">Non-Anginal Pain (CP = 2)</option>
+                  <option value="3">Asymptomatic (CP = 3)</option>
                 </select>
                 <input
                   type="number"
@@ -193,9 +206,9 @@ const Page = () => {
                   required
                   className="p-3 rounded-xl border-2"
                 >
-                  <option value="1">Thal 1</option>
-                  <option value="2">Thal 2</option>
-                  <option value="3">Thal 3</option>
+                  <option value="1">Normal (Thal = 1)</option>
+                  <option value="2">Fixed Defect (Thal = 2)</option>
+                  <option value="3">Reversible Defect (Thal = 3)</option>
                 </select>
               </div>
 
@@ -205,7 +218,7 @@ const Page = () => {
                   disabled={loading}
                   className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 py-3 rounded-xl text-white font-medium shadow-md transition-transform transform hover:scale-105"
                 >
-                  {loading ? 'Submitting...' : 'Submit'}
+                  {loading ? "Submitting..." : "Submit"}
                 </button>
               </div>
             </form>
@@ -214,13 +227,21 @@ const Page = () => {
           {result && (
             <div className="mt-8 p-6 rounded-2xl shadow-lg text-center bg-white dark:bg-zinc-900">
               <h2 className="text-2xl font-bold mb-4">Test Results</h2>
-              <p><strong>First Name:</strong> {formData.firstname}</p>
-              <p><strong>Last Name:</strong> {formData.lastname}</p>
-              <p><strong>Age:</strong> {formData.age}</p>
-              <p><strong>Gender:</strong> {formData.gender}</p>
+              <p>
+                <strong>First Name:</strong> {formData.firstname}
+              </p>
+              <p>
+                <strong>Last Name:</strong> {formData.lastname}
+              </p>
+              <p>
+                <strong>Age:</strong> {formData.age}
+              </p>
+              <p>
+                <strong>Gender:</strong> {formData.gender}
+              </p>
               <p
                 className={`mt-4 text-xl font-bold ${
-                  result === 'POSITIVE' ? 'text-red-600' : 'text-green-600'
+                  result === "POSITIVE" ? "text-red-600" : "text-green-600"
                 }`}
               >
                 Result: <i>{result}</i>

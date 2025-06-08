@@ -1,6 +1,6 @@
 "use client";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface PredictionResult {
   class: number;
@@ -12,6 +12,15 @@ export default function CovidDiagnosis() {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render nothing or loading skeleton to prevent hydration mismatch
+    return null;
+  }
 
   const handleUpload = async () => {
     if (!file) return;
