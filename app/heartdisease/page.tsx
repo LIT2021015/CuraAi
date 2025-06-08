@@ -43,31 +43,23 @@ const Page = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("https://heartdisease-5ivk.onrender.com/predict", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          age: parseInt(formData.age) || 0,
-          sex: formData.gender === "male" ? 1 : 0,
-          cp: parseInt(formData.tcp) || 0,
-          trestbps: 120,
-          chol: 200,
-          fbs: 0,
-          restecg: 1,
-          thalach: parseInt(formData.mhra) || 0,
-          exang: parseInt(formData.eia) || 0,
-          oldpeak: parseFloat(formData.op) || 0,
-          slope: 2,
-          ca: parseInt(formData.nmv) || 0,
-          thal: parseInt(formData.thal) || 1,
-        }),
-      });
+      const res = await fetch("https://heartdisease-5ivk.onrender.com/api/predict_heart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    ca: parseInt(formData.nmv),
+    cp: parseInt(formData.tcp),
+    exang: parseInt(formData.eia),
+    thal: parseInt(formData.thal),
+    oldpeak: parseFloat(formData.op),
+    thalach: parseInt(formData.mhra),
+    age: parseInt(formData.age)
+  }),
+});
 
       const data = await res.json();
       console.log(data)
-      setResult(data.prediction === 1 ? "POSITIVE" : "NEGATIVE");
+      setResult(data.prediction == 0 ? "POSITIVE" : "NEGATIVE");
     } catch (error) {
       console.error("Prediction error:", error);
       alert("Failed to get prediction. Please try again.");

@@ -54,6 +54,8 @@ const page = () => {
         parseFloat(formData.concavity_mean),
       ];
 
+      console.log(features)
+
       const res = await fetch('https://bcancer-tppu.onrender.com/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

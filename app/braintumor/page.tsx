@@ -53,7 +53,7 @@ const Page = () => {
     setLoading(true);
     setResult(null);
 
-    const res = await fetch('https://braintumor-fb01.onrender.com/predict', {
+    const res = await fetch('https://brain-tumor-xavg.onrender.com/predict', {
       method: 'POST',
       body: formData,
     });
@@ -66,7 +66,9 @@ const Page = () => {
         label: data.label,
         confidence: data.confidence,
       });
+      console.log(data)
     } else {
+      console.log(data.error)
       alert('Prediction Failed');
     }
   };
