@@ -13,12 +13,14 @@ export async function POST(req: Request) {
     const res = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "meta-llama/llama-3.3-8b-instruct:free",
+        model: "deepseek/deepseek-chat-v3-0324:free",
         messages: conversation,
       },
       {
         headers: {
-          Authorization: "Bearer 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",
+          // Authorization: "Bearer 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",
+          // Authorization : "Bearer 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",
+          Authorization : process.env.CHAT_PASS,
           "Content-Type": "application/json",
         },
       }
