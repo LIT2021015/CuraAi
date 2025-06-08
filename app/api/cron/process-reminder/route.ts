@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { DateTime } from "luxon";
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -11,9 +12,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function GET() {
-  const now = new Date();
-  const currentTimeHHmm = now.toTimeString().slice(0, 5); // "HH:mm"
-  console.log(`Running reminder job for time: ${currentTimeHHmm}`);
+  const nowInIST = DateTime.now().setZone("Asia/Kolkata");
+  const currentTimeHHmm = nowInIST.toFormat("HH:mm");
+  console.log(`Running reminder job for IST time: ${currentTimeHHmm}`);
 
   const reminders = await prisma.reminder.findMany({
     where: {
