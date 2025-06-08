@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,17 +34,22 @@ export default function HospitalDashboard() {
     if (status === "authenticated") {
       fetchHospital();
     }
+      if (status === "unauthenticated") {
+    router.push("/hospital_registration");
+  }
   }, [status]);
 
-  if (status === "loading") return <p className="text-center mt-8">Loading...</p>;
-  if (status === "unauthenticated") {
-    router.push("/hospital_registration");
-    return null;
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 mt-8">
-      <h1 className="text-3xl font-bold text-center mb-10">🏥 Hospital Dashboard</h1>
+      {/* Header with Logout */}
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="text-3xl font-bold">🏥 Hospital Dashboard</h1>
+        <Button variant="destructive" onClick={() => signOut()}>
+          Logout
+        </Button>
+      </div>
 
       {/* Hospital Info */}
       <Card className="p-6 mb-8">
@@ -56,13 +61,15 @@ export default function HospitalDashboard() {
             <p><strong>Location:</strong> {hospital.location}</p>
             <p><strong>Departments:</strong> {hospital.departments.join(", ")}</p>
             <p><strong>Facilities:</strong> {hospital.facilities.join(", ")}</p>
-            <p><strong>Available Blood Types:</strong> {hospital.bloodTypes?hospital.bloodTypes.join(", "):""}</p>
+            <p><strong>Available Blood Types:</strong> {hospital.bloodTypes?.join(", ")}</p>
           </div>
         ) : (
           <p>Loading hospital data...</p>
         )}
         <div className="mt-4">
-          <Button onClick={() => router.push("/hospital/edit-profile")}>Edit Profile</Button>
+          <Button onClick={() => router.push("/hospital/edit-profile")}>
+            Edit Profile
+          </Button>
         </div>
       </Card>
 
@@ -70,37 +77,51 @@ export default function HospitalDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">📅 Manage Appointments</h3>
-          <Button onClick={() => router.push("/hospital/appointments")}>Go to Appointments</Button>
+          <Button onClick={() => router.push("/hospital/appointments")}>
+            Go to Appointments
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🩸 Handle Blood Requests</h3>
-          <Button onClick={() => router.push("/hospital/blood-requests")}>Go to Blood Requests</Button>
+          <Button onClick={() => router.push("/hospital/blood-requests")}>
+            Go to Blood Requests
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">💉 Blood Stock Management</h3>
-          <Button onClick={() => router.push("/hospital/blood-stock")}>Manage Blood Stock</Button>
+          <Button onClick={() => router.push("/hospital/blood-stock")}>
+            Manage Blood Stock
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">👨‍⚕️ Doctor Management</h3>
-          <Button onClick={() => router.push("/hospital/doctor")}>Manage Doctors</Button>
+          <Button onClick={() => router.push("/hospital/doctor")}>
+            Manage Doctors
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">💻 Online Consultations</h3>
-          <Button onClick={() => router.push("/hospital/consultations")}>Consultation Logs</Button>
+          <Button onClick={() => router.push("/hospital/consultations")}>
+            Consultation Logs
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🧑‍🤝‍🧑 Volunteers</h3>
-          <Button onClick={() => router.push("/hospital/volunteers")}>View Volunteers</Button>
+          <Button onClick={() => router.push("/hospital/volunteers")}>
+            View Volunteers
+          </Button>
         </Card>
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🚨 Emergency SOS Alerts</h3>
-          <Button onClick={() => router.push("/hospital/emergency-alerts")}>View Alerts</Button>
+          <Button onClick={() => router.push("/hospital/emergency-alerts")}>
+            View Alerts
+          </Button>
         </Card>
       </div>
     </div>

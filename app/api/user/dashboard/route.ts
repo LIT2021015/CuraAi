@@ -25,6 +25,8 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
+
+      // console.log(token)
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 

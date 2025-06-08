@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Try to find hospital using email
+    
     const hospital = await prisma.hospital.findUnique({
       where: { email: token.email },
     });
