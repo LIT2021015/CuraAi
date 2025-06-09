@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+interface BloodStock {
+  bloodGroup: string;
+  quantity: number;
+}
 interface HospitalData {
   name: string;
   email: string;
   location: string;
   departments: string[];
   facilities: string[];
-  bloodTypes: string[];
+  bloodTypes: BloodStock[];
 }
 
 export default function HospitalDashboard() {
@@ -26,6 +30,7 @@ export default function HospitalDashboard() {
       if (res.ok) {
         const data = await res.json();
         setHospital(data.hospital);
+        console.log(data);
       } else {
         alert("Failed to fetch hospital details.");
       }
@@ -61,16 +66,17 @@ export default function HospitalDashboard() {
             <p><strong>Location:</strong> {hospital.location}</p>
             <p><strong>Departments:</strong> {hospital.departments.join(", ")}</p>
             <p><strong>Facilities:</strong> {hospital.facilities.join(", ")}</p>
-            <p><strong>Available Blood Types:</strong> {hospital.bloodTypes?.join(", ")}</p>
+            <p><strong>Available Blood Types:</strong> {hospital.bloodTypes?.map(bt => bt.bloodGroup).join(", ")}</p>
+
           </div>
         ) : (
           <p>Loading hospital data...</p>
         )}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <Button onClick={() => router.push("/hospital/edit-profile")}>
             Edit Profile
           </Button>
-        </div>
+        </div> */}
       </Card>
 
       {/* Action Grid */}
@@ -82,12 +88,12 @@ export default function HospitalDashboard() {
           </Button>
         </Card>
 
-        <Card className="p-5">
+        {/* <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🩸 Handle Blood Requests</h3>
           <Button onClick={() => router.push("/hospital/blood-requests")}>
             Go to Blood Requests
           </Button>
-        </Card>
+        </Card> */}
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">💉 Blood Stock Management</h3>
@@ -103,12 +109,12 @@ export default function HospitalDashboard() {
           </Button>
         </Card>
 
-        <Card className="p-5">
+        {/* <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">💻 Online Consultations</h3>
           <Button onClick={() => router.push("/hospital/consultations")}>
             Consultation Logs
           </Button>
-        </Card>
+        </Card> */}
 
         <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🧑‍🤝‍🧑 Volunteers</h3>
@@ -117,12 +123,12 @@ export default function HospitalDashboard() {
           </Button>
         </Card>
 
-        <Card className="p-5">
+        {/* <Card className="p-5">
           <h3 className="font-medium text-lg mb-3">🚨 Emergency SOS Alerts</h3>
           <Button onClick={() => router.push("/hospital/emergency-alerts")}>
             View Alerts
           </Button>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

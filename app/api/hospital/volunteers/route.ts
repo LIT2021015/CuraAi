@@ -1,7 +1,6 @@
-
 import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,22 +10,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    
     const hospital = await prisma.hospital.findUnique({
       where: { email: token.email },
-      include:{
-
-        bloodTypes: true,
-      }
+      select: {
+        id: true,
+      },
     });
 
     if (!hospital) {
       return NextResponse.json({ error: "Hospital not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ hospital });
+    const volunteers = await prisma.volunteer.findMany({
+      where: {
+        hospitalId: hospital.id,
+      },
+      include: {
+        user: true, // To include user info (name, blood group)
+      },
+      orderBy: {
+        registeredAt: "desc",
+      },
+    });
+
+    return NextResponse.json({ volunteers });
   } catch (error) {
-    console.error("Error fetching hospital data:", error);
+    console.error("Error fetching volunteers:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
